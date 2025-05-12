@@ -1,12 +1,12 @@
 import pytest
 import argparse
-import sys
 import os
 import pathlib
 
 from snpit_utils.config import Config
 
 _rundir = pathlib.Path( __file__ ).parent.resolve()
+
 
 @pytest.fixture( autouse=True )
 def config_cleanup():
@@ -19,12 +19,13 @@ def config_cleanup():
     #   aren't really supposed to.
 
     orig_def_def = Config._default_default
-    
+
     yield True
 
     Config._default_default = orig_def_def
     Config._default = None
     Config._configs = {}
+
 
 @pytest.fixture
 def cfg():
@@ -35,7 +36,7 @@ def cfg():
 def test_default_default():
     # make sure that when we load a config without parameters,
     # it uses the default config file
-    default_config_path = os.getenv( 'SNAPPL_CONFIG' )
+    default_config_path = os.getenv( 'SNPIT_CONFIG' )
     assert default_config_path is not None
     assert Config._default_default == str(default_config_path)
     cfg = Config.get()
@@ -48,44 +49,47 @@ def test_set_default():
     # damage we're doing here.)
     Config._default_default = None
 
-    env_exists = 'SNAPPL_CONFIG' in os.environ
+    env_exists = 'SNPIT_CONFIG' in os.environ
     if env_exists:
-        orig_env = os.getenv( 'SNAPPL_CONFIG' )
-        del os.environ[ 'SNAPPL_CONFIG' ]
+        orig_env = os.getenv( 'SNPIT_CONFIG' )
+        del os.environ[ 'SNPIT_CONFIG' ]
 
-    # Normally, will not set the default
-    _ = Config.get( _rundir / "config_test_data/test.yaml" )
-    assert Config._default is None
+    try:
+        # Normally, will not set the default
+        _ = Config.get( _rundir / "config_test_data/test.yaml" )
+        assert Config._default is None
 
-    # Will set the default it we tell it to
-    _ = Config.get( _rundir / "config_test_data/test.yaml", setdefault=True )
-    assert Config._default == str( ( _rundir / "config_test_data/test.yaml" ).resolve() )
+        # Will set the default it we tell it to
+        _ = Config.get( _rundir / "config_test_data/test.yaml", setdefault=True )
+        assert Config._default == str( ( _rundir / "config_test_data/test.yaml" ).resolve() )
 
-    # Will set the default to something else if we tell it to
-    _ = Config.get( _rundir / "config_test_data/testpreload1.yaml", setdefault=True )
-    assert Config._default == str( ( _rundir / "config_test_data/testpreload1.yaml" ).resolve() )
+        # Will set the default to something else if we tell it to
+        _ = Config.get( _rundir / "config_test_data/testpreload1.yaml", setdefault=True )
+        assert Config._default == str( ( _rundir / "config_test_data/testpreload1.yaml" ).resolve() )
 
-    # Reset everything
-    Config._default = None
-    Config._configs = {}
+        # Reset everything
+        Config._default = None
+        Config._configs = {}
 
-    # If there's a default default, but we load something else,
-    #   make sure the default isn't set.
-    Config._default_default = str( ( _rundir / "config_test_data/test.yaml" ).resolve() )
-    _ = Config.get( _rundir / "config_test_data/testpreload1.yaml" )
-    assert Config._default is None
+        # If there's a default default, but we load something else,
+        #   make sure the default isn't set.
+        Config._default_default = str( ( _rundir / "config_test_data/test.yaml" ).resolve() )
+        _ = Config.get( _rundir / "config_test_data/testpreload1.yaml" )
+        assert Config._default is None
 
-    # If there's a default default and we just get config,
-    #   make sure it gets set to the default.
-    cfg = Config.get()
-    assert Config._default == Config._default_default
-    # ...and make sure we got the exact Config object
-    assert cfg is Config._configs[ Config._default ]
-    assert cfg._static
+        # If there's a default default and we just get config,
+        #   make sure it gets set to the default.
+        cfg = Config.get()
+        assert Config._default == Config._default_default
+        # ...and make sure we got the exact Config object
+        assert cfg is Config._configs[ Config._default ]
+        assert cfg._static
 
-    # If we call it again, we get the same object
-    cfg2 = Config.get()
-    assert cfg is cfg2
+        # If we call it again, we get the same object
+        cfg2 = Config.get()
+        assert cfg is cfg2
+    finally:
+        os.setenv( 'SNPIT_CONFIG', orig_env )
 
 
 def test_config_path( cfg ):
@@ -175,7 +179,7 @@ def test_loading_and_getting( cfg ):
 
     # mainlist4 is set in test.yaml and added to in testdestrapp1
     assert cfg.value( 'mainlist4' ) == [ 'main1', 'main2', 'app1' ]
-    
+
     # mainlist for is in test.yaml and added to in testdestrapp1.yaml
     assert cfg.value( 'mainlist4' ) == [ 'main1', 'main2', 'app1' ]
 
@@ -230,17 +234,17 @@ def test_loading_and_getting( cfg ):
 
 def test_no_overrides():
     with pytest.raises( RuntimeError, match="Error combining key scalar with mode augment" ):
-        cfg = Config.get( "config_test_data/testfail1.yaml" )
+        _cfg = Config.get( "config_test_data/testfail1.yaml" )
 
     with pytest.raises( RuntimeError, match="Error combining key preloaddict2.main with mode augment" ):
-        cfg = Config.get( "config_test_data/testfail2.yaml" )
+        _cfg = Config.get( "config_test_data/testfail2.yaml" )
 
     with pytest.raises( RuntimeError, match="Error combining key mainscalar with mode append" ):
-        cfg = Config.get( "config_test_data/testfail3.yaml" )
+        _cfg = Config.get( "config_test_data/testfail3.yaml" )
 
     with pytest.raises( RuntimeError, match=("Error combining key maindict with mode append; "
                                              "left is a <class 'dict'> and right is a <class 'list'>" ) ):
-        cfg = Config.get( "config_test_data/testfail4.yaml" )
+        _cfg = Config.get( "config_test_data/testfail4.yaml" )
 
 
 def test_command_line( cfg ):
@@ -250,7 +254,7 @@ def test_command_line( cfg ):
 
     arglist = [ '--mainlist2', 'cat', 'dog', '--mainscalar2', 'arg', '--nest-nest2-val', 'arg',
                 '--nest-nest1', 'mouse', 'wombat' ]
-    
+
     args = parser.parse_args( arglist )
 
     # Just spot check a few
@@ -266,9 +270,9 @@ def test_command_line( cfg ):
     assert cfg.value( 'mainscalar2' ) == 'arg'
     assert cfg.value( 'nest.nest2.val' ) == 'arg'
     assert cfg.value( 'nest.nest1' ) == [ 'mouse', 'wombat' ]
-    
 
-        
+
+
 def test_no_direct_instantiation():
     with pytest.raises( RuntimeError, match="Don't instantiate a Config directly; use configobj=Config.get(...)." ):
         _ = Config()
@@ -369,6 +373,3 @@ def test_set( cfg ):
     assert clone.value('totallynewvalue') == { 'one': 'one', 'two': 'two' }
     with pytest.raises( ValueError, match="Field totallynewvalue doesn't exist" ):
         _ = cfg.value( 'totallynewvalue' )
-
-
-

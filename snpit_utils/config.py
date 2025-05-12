@@ -56,7 +56,7 @@ class Config:
          import argparse
 
          cfg = Config.get()
-    
+
          parser = argparse.ArgumentParser( 'test.py', description='Do things' )
          parser.add_argument( "-m", "--my-argument", help="My argument; there may be more" )
          cfg.augment_argparse( parser )
@@ -90,7 +90,7 @@ class Config:
 
        You should ignore these; when you call Config.parse_args, it will
        look for all of them.
-    
+
     3. Get the value of something in your config with:
 
            configval = confobj.value( fieldspec )
@@ -185,13 +185,13 @@ class Config:
 
     overrides is a list of files read next, in order.  Each one
       *overrides* the current working dictionary.
-    
+
     destructive_appends is a list of files read next, in order.  Each
       one does a *destructive_append* on the current working dictionary.
-     
+
     appends is a list of files read last.  Each one *appends* to the
       current working dictionary.
-    
+
     Any file that's read can itself have the special keys indicating
     other files to include.  If there is any circular inclusion -- or,
     really, if any file is referred to more than once when the whole
@@ -279,19 +279,19 @@ class Config:
          Be warned: you can wipe out entire trees of config options
          here!  (Imagine if the left tree had a dictionary and the right
          tree had a scalar.)
-  
+
        * If the current item being compared is a dictionary, then
          the dictionaries are merged in exactly the same manner
          as "append", with the modification that recursing down
          into the dictionary passes along the fact that we're
          overriding rather than append.
-  
+
        * If the current item being compared is a list, then the
          right list *replaces* the left list.  (This could
          potentially throw away a gigantic hierarchy if lists
          and dicts and scalars from the left wide, which is as
          designed.)
-  
+
        * If the item being compared is a scalar, then the right value
          replaces the left value.
 
@@ -512,7 +512,7 @@ class Config:
                     return fname
                 else:
                     return self._path.parent / fname
-                    
+
             preloaddict = {}
             for preloadfile in imports['preloads']:
                 cfg = Config( pathify(preloadfile), files_read=files_read, _ok_to_call=True )
@@ -561,25 +561,25 @@ class Config:
           field for that branch.
 
            For example, if the config yaml file is;
-      
+
            scalar: value
-      
+
            dict1:
              dict2:
                sub1: 2level1
                sub2: 2level2
-      
+
            dict3:
              list:
                - list0
                - list1
-      
+
            then you could get values with:
-      
+
            configobj.value( "scalar" ) --> returns "value"
            configobj.value( "dict1.dict2.sub2" ) --> returns "2level2"
            configobj.value( "dict3.list.1" ) --> returns "list1"
-      
+
            You can also specify a branch to get back the rest of the
            subtree; for instance configobj.value( "dict1.dict2" ) would
            return the dictionary { "sub1": "2level1", "sub2": "2level2" }.
@@ -775,10 +775,10 @@ class Config:
 
         ppath = f"{parentpath}." if len(parentpath) > 0 else ""
         errkeyword = f'{ppath}{keyword}'
-        
+
         if mode not in ( 'append', 'augment', 'destructive_append', 'override' ):
             raise ValueError( f"Unknown mode {mode} for {errkeyword}" )
-        
+
         if not isinstance( left, dict ):
             if mode == 'override':
                 return copy.deepcopy( right )
@@ -806,9 +806,9 @@ class Config:
                         newdict[key] = Config._merge_trees( key, newdict[key], value, mode=mode,
                                                             parentpath=f"{ppath}{keyword}" )
                 return newdict
-            
+
         raise RuntimeError( f"Error combining key {errkeyword} with mode {mode}; left is a {type(left)} "
-                            f"and right is a {type(right)}" )        
+                            f"and right is a {type(right)}" )
 
 
 
@@ -832,7 +832,7 @@ class Config:
             else:
                 # If this happens, then it means more code needs to be written here
                 raise RuntimeError( f"Failed to add an argument for {path}{key} which is of type {type(val)}" )
-                
+
 
     def parse_args( self, args, path='',_dict=None ):
         _dict = self._data if _dict is None else _dict
@@ -843,7 +843,7 @@ class Config:
                 self.parse_args( args, path=f'{arg}_', _dict=val )
             elif getattr( args, arg ) is not None:
                 _dict[key] = getattr( args, arg )
-                
+
 
 if __name__ == "__main__":
     Config.init()
