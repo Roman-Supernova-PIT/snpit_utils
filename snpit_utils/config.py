@@ -5,7 +5,7 @@ import types
 import copy
 import yaml
 
-from snpit_utils.logger import Lager
+from snpit_utils.logger import SNLogger
 
 
 class NoValue:
@@ -489,7 +489,7 @@ class Config:
         files_read.add( self._path )
 
         try:
-            Lager.debug( f"Loading config file {self._path}" )
+            SNLogger.debug( f"Loading config file {self._path}" )
             curfiledata = yaml.safe_load( open(self._path) )
             if curfiledata is None:
                 # Empty file, so self._data can stay as {}
@@ -543,7 +543,7 @@ class Config:
                 self._data = self._merge_trees( '', self._data, cfg._data, mode='append' )
 
         except Exception as e:
-            Lager.exception( f'Exception trying to load config from {configfile}' )
+            SNLogger.exception( f'Exception trying to load config from {configfile}' )
             raise e
 
     def value( self, field, default=NoValue(), struct=None ):
