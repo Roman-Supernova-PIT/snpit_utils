@@ -89,7 +89,7 @@ def test_set_default():
         cfg2 = Config.get()
         assert cfg is cfg2
     finally:
-        os.setenv( 'SNPIT_CONFIG', orig_env )
+        os.environ['SNPIT_CONFIG'] = orig_env
 
 
 def test_config_path( cfg ):

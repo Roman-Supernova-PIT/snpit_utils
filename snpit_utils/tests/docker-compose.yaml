@@ -18,6 +18,9 @@
 #   pytest -v
 
 services:
+  environment:
+    PYTHONPATH: /snpit_utils
+
   shell:
     image: rknop/roman-snpit-env:cpu
     entrypoint: [ "tail", "-f", "/etc/issue" ]
