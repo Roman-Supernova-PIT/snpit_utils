@@ -91,6 +91,8 @@ def test_set_default():
     finally:
         if env_exists:
             os.environ['SNPIT_CONFIG'] = orig_env
+        elif 'SNPIT_CONFIG' in os.environ:
+            del os.environ['SNPIT_CONFIG']
 
 
 def test_config_path( cfg ):
