@@ -1,0 +1,34 @@
+{
+  "template": "/home/raknop/roman/package-template",
+  "commit": "1e5479ddb02e47f6f56ffe8b517632d6591579ac",
+  "checkout": "u/rknop/patch",
+  "context": {
+    "cookiecutter": {
+      "package_name": "roman_snpit_utils",
+      "module_name": "snpit_utils",
+      "short_description": "Base utilities for the Roman SNPIT",
+      "author_name": "Rob Knop et al.",
+      "author_email": "raknop@lbl.gov",
+      "github_username": "rknop",
+      "minimum_python_version": "3.11",
+      "use_compiled_extensions": "n",
+      "include_example_code": "n",
+      "include_github_workflows": "y",
+      "_project_url": "https://github.com/Roman-Supernova-PIT",
+      "_pit_github_org": "Roman-Supernova-PIT",
+      "_pit_name": "Roman Supernove Project Infrastructure Team",
+      "_sphinx_theme": "alabaster",
+      "_parent_project": "",
+      "install_requires": "",
+      "_copy_without_render": [
+        "docs/_templates",
+        "docs/_static",
+        ".github/workflows",
+        ".github/"
+      ],
+      "_template": "/home/raknop/roman/package-template",
+      "_commit": "1e5479ddb02e47f6f56ffe8b517632d6591579ac"
+    }
+  },
+  "directory": null
+}
