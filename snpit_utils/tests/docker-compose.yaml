@@ -18,9 +18,6 @@
 #   pytest -v
 
 services:
-  environment:
-    PYTHONPATH: /snpit_utils
-
   shell:
     image: rknop/roman-snpit-env:cpu
     entrypoint: [ "tail", "-f", "/etc/issue" ]
@@ -32,6 +29,8 @@ services:
 
   runtests:
     image: rknop/roman-snpit-env:cpu
+    environment:
+      PYTHONPATH: /snpit_utils
     working_dir: /snpit_utils/snpit_utils
     entrypoint: [ "/bin/sh", "-c", "python -m setuptools_scm --force-write-version-files && cd tests && pytest -v" ]
     # entrypoint: [ "/bin/sh", "-c", "cd snpit_utils/tests && pytest -v" ]
