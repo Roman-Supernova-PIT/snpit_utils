@@ -1,0 +1,2 @@
+Add --no-deps to pip install -e so the test tries to run the package in
+a clean snpit environment.
