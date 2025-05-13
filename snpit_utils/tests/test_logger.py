@@ -3,7 +3,6 @@ import sys
 import io
 import re
 import logging
-import functools
 import multiprocessing.pool
 
 import snpit_utils.logger
@@ -31,7 +30,7 @@ def logoutput():
     """Configure the SNLogger to log to a io.StringIO, and return that StringIO.
 
     Use this to see the output produced by the logger.
-    
+
     I haven't figured out how to test SNLogger logging to stderr.  I
     tried resetting sys.stderr to a stream I controlled, but that didn't
     work. I suspect pytest is already doing fancy things with
@@ -59,7 +58,7 @@ def test_get():
     loggingobj = SNLogger.get()
     assert isinstance( loggingobj, logging.Logger )
     assert loggingobj == SNLogger._instance._logger
-    
+
 
 def test_set_level( logoutput ):
     """Make sure log levels are set properly.
@@ -68,7 +67,7 @@ def test_set_level( logoutput ):
     SNLogger.warning, SNLogger.error, and SNLogger.critical.
 
     """
-    
+
     levels = [ 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL' ]
     funcs = [ SNLogger.debug, SNLogger.info, SNLogger.warning, SNLogger.error, SNLogger.critical ]
 
@@ -92,7 +91,7 @@ def test_set_level( logoutput ):
 
 def test_exception( logoutput ):
     try:
-        raise( RuntimeError("uh oh") )
+        raise RuntimeError("uh oh")
     except RuntimeError as e:
         SNLogger.exception( e )
 
@@ -100,17 +99,17 @@ def test_exception( logoutput ):
                         r'Traceback \(most recent call last\):\n' ),
                       logoutput.getvalue() )
 
-    
+
 def test_replace( logoutput ):
     """Also, effectively, tests __init__."""
-    
+
     # Send a starting message that should match the defaults
     SNLogger.error( "Hello, world!" )
     assert re.search( default_regex( "Hello, world!" ), logoutput.getvalue() )
 
     logoutput.seek(0)
     logoutput.truncate( 0 )
-    
+
     # Change dateformat
     SNLogger.replace( datefmt='%b %d, %Y %H:%M:%S' )
     SNLogger.error( "Hello, world!" )
@@ -162,14 +161,14 @@ def look_at_logger():
 
 def test_multiprocessing_replace( logoutput ):
     results = []
-    
+
     def oops( e ):
         sys.stderr.write( f"Exception from subprocess: {e}\n" )
         results.append( False )
 
     def accumulate( worked ):
         results.append( worked )
-        
+
     with multiprocessing.pool.Pool(5) as pool:
         for i in range(5):
             pool.apply_async( look_at_logger, [], {}, accumulate, oops )
@@ -179,4 +178,3 @@ def test_multiprocessing_replace( logoutput ):
 
     assert len(results) == 5
     assert all( results )
-

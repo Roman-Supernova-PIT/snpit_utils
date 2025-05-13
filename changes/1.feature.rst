@@ -1,0 +1,1 @@
+Add automated github workflow run of tests on config and logger

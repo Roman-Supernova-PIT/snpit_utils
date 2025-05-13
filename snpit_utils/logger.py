@@ -44,7 +44,7 @@ class SNLogger:
     otherwise, it's the PID of the process.  (Often with something like
     a multiprocessing pool, processes are named something like
     ForkPoolWorker-1, where the 1 increments.)
-    
+
     If you want access to the underlying logging.Logger object, call
     SNLogger.get().  The underlying object is instantiated the first
     time it's used.  If you want to manually instantiate it, call
@@ -126,7 +126,7 @@ class SNLogger:
              ( "handler" not in kwargs ) ):
             raise RuntimeError( "If you use multiprocessing_replace and you aren't using the "
                                 "default handler, you need to pass a handler created in the subprocess." )
-        
+
         me = multiprocessing.current_process()
         # Usually processes are named things like ForkPoolWorker-{number}, or something
         match = re.search( '([0-9]+)', me.name )
@@ -209,7 +209,7 @@ class SNLogger:
         self._show_millisec = show_millisec
         self._using_default_handler = handler is None
         self._handler = logging.StreamHandler( sys.stderr ) if self._using_default_handler else handler
-        
+
         SNLogger._ordinal += 1
         self._logger = logging.getLogger( f"SeeChange_{SNLogger._ordinal}" )
 
