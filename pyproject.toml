@@ -172,7 +172,7 @@ package_dir = "snpit_utils"
 title_format = "{version} ({project_date})"
 ignore = [".gitkeep"]
 wrap = true
-issue_format = "`#{issue} <https://github.com/Roman-Supernova-PIT/roman_snpit_utils/issues/{issue}>`_"
+issue_format = "`#{issue} <https://github.com/Roman-Supernova-PIT/snpit_utils/issues/{issue}>`_"
 
 [[tool.towncrier.type]]
 directory = "/"

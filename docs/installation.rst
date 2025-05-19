@@ -12,9 +12,9 @@ To install roman_snpit_utils, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install roman_snpit_utils
+    $ pip install snpit_utils
 
-This is the preferred method to install roman_snpit_utils, as it will always install the most recent stable release.
+This is the preferred method to install snpit_utils, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -26,19 +26,19 @@ you through the process.
 From sources
 ------------
 
-The sources for roman_snpit_utils can be downloaded from the `Github repo`_.
+The sources for snpit_utils can be downloaded from the `Github repo`_.
 
 You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git@github.com:Roman-Supernova-PIT/roman_snpit_utils.git
+    $ git clone git@github.com:Roman-Supernova-PIT/snpit_utils.git
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl -OJL https://github.com/Roman-Supernova-PIT/roman_snpit_utils/tarball/master
+    $ curl -OJL https://github.com/Roman-Supernova-PIT/snpit_utils/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -54,5 +54,5 @@ If you would like to do an editable install:
     $ pip install -e .[docs]  # install document build packages during install
 
 
-.. _Github repo: https://github.com/Roman-Supernova-PIT/roman_snpit_utils
-.. _tarball: https://github.com/Roman-Supernova-PIT/roman_snpit_utils/tarball/master
+.. _Github repo: https://github.com/Roman-Supernova-PIT/snpit_utils
+.. _tarball: https://github.com/Roman-Supernova-PIT/snpit_utils/tarball/master
