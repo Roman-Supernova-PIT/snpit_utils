@@ -1,0 +1,27 @@
+Config
+======
+
+.. currentmodule:: snpit_utils.config
+
+.. autoclass:: Config
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Config.augment_argparse
+      ~Config.get
+      ~Config.init
+      ~Config.parse_args
+      ~Config.set_value
+      ~Config.value
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: augment_argparse
+   .. automethod:: get
+   .. automethod:: init
+   .. automethod:: parse_args
+   .. automethod:: set_value
+   .. automethod:: value

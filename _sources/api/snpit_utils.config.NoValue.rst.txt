@@ -1,0 +1,7 @@
+NoValue
+=======
+
+.. currentmodule:: snpit_utils.config
+
+.. autoclass:: NoValue
+   :show-inheritance:
