@@ -4,7 +4,7 @@ roman_snpit_utils Documentation
 
 This is the documentation for roman_snpit_utils.
 
-**Version**: |version|
+**Version**: |version|  (WARNING, this is wrong.  Use git tag to see the current version.)
 
 
 This package contains the Python software suite developed for use with the Roman Telescope project, as part of the Roman Supernova Project Implementation Team (PIT) project. 
