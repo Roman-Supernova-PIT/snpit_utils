@@ -819,16 +819,16 @@ class Config:
             if isinstance( val, dict ):
                 self.augment_argparse( parser, path=f'{path}{key}-', _dict=val )
             elif isinstance( val, list ):
-                parser.add_argument( f'--{path}{key}', nargs="*" )
+                parser.add_argument( f'--{path}{key}', nargs="*", help=f"Default: {val}" )
             elif isinstance( val, str ):
-                parser.add_argument( f'--{path}{key}' )
+                parser.add_argument( f'--{path}{key}', help=f"Default: {val}" )
             elif isinstance( val, numbers.Integral ):
-                parser.add_argument( f'--{path}{key}', type=int )
+                parser.add_argument( f'--{path}{key}', type=int, help=f"Default: {val}" )
             elif isinstance( val, numbers.Real ):
-                parser.add_argument( f'--{path}{key}', type=float )
+                parser.add_argument( f'--{path}{key}', type=float, help=f"Default: {val}" )
             elif val is None:
                 # Not obvious what to do here, so just add a string argument
-                parser.add_argument( f'--{path}{key}' )
+                parser.add_argument( f'--{path}{key}', help=f"Default: {val}" )
             else:
                 # If this happens, then it means more code needs to be written here
                 raise RuntimeError( f"Failed to add an argument for {path}{key} which is of type {type(val)}" )
