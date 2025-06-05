@@ -824,7 +824,7 @@ class Config:
             elif isinstance( val, str ):
                 parser.add_argument( f'--{path}{key}', help=f"Default: {val}" )
             elif isinstance( val, bool ):
-                parser.add_argument( f'--{path}{key}', action=argparse.BooleanOptionalAction )
+                parser.add_argument( f'--{path}{key}', action=argparse.BooleanOptionalAction, help=f"Default: {val}" )
             elif isinstance( val, numbers.Integral ):
                 parser.add_argument( f'--{path}{key}', type=int, help=f"Default: {val}" )
             elif isinstance( val, numbers.Real ):
