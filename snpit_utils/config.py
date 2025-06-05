@@ -849,7 +849,7 @@ class Config:
             elif isinstance( val, bool ):
                 if getattr( args, arg ):
                     if not getattr( args, f"no_{arg}" ):
-                        raise RuntimeError( "Can't specify both {arg} and no_{arg}" )
+                        raise RuntimeError( f"Can't specify both {arg} and no_{arg}" )
                     _dict[key] = True
                 elif not getattr( args, f"no_{arg}" ):
                     _dict[key] = False
