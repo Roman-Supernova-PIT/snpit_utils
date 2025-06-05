@@ -1,8 +1,9 @@
+import argparse
+import copy
+import numbers
 import os
 import pathlib
-import numbers
 import types
-import copy
 import yaml
 
 from snpit_utils.logger import SNLogger
@@ -822,6 +823,8 @@ class Config:
                 parser.add_argument( f'--{path}{key}', nargs="*", help=f"Default: {val}" )
             elif isinstance( val, str ):
                 parser.add_argument( f'--{path}{key}', help=f"Default: {val}" )
+            elif isinstance( val, bool ):
+                parser.add_argument( f'--{path}{key}', action=argparse.BooleanOptionalAction, help=f"Default: {val}" )
             elif isinstance( val, numbers.Integral ):
                 parser.add_argument( f'--{path}{key}', type=int, help=f"Default: {val}" )
             elif isinstance( val, numbers.Real ):

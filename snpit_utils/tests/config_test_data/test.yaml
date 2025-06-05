@@ -30,6 +30,8 @@ maindict:
   mainval1: val1
   mainval2: val2
   mainval3: val3
+  bool_value: True
+  false_bool_value: False
   
 mainlist1:
   - main1

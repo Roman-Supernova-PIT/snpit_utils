@@ -167,7 +167,8 @@ def test_loading_and_getting( cfg ):
     assert cfg.value( 'replpreload2scalar2' ) == '2scalar2'
 
     # maindict is in test.yaml and not modified
-    assert cfg.value( 'maindict' ) == { 'mainval1': 'val1', 'mainval2': 'val2', 'mainval3': 'val3' }
+    assert cfg.value( 'maindict' ) == { 'mainval1': 'val1', 'mainval2': 'val2', 'mainval3': 'val3',
+                                        'bool_value': True, 'false_bool_value': False }
     assert cfg.value( 'maindict.mainval2' ) == 'val2'
 
     # mainlist1 is in test.yaml and not modified
@@ -274,6 +275,35 @@ def test_command_line( cfg ):
     assert cfg.value( 'nest.nest2.val' ) == 'arg'
     assert cfg.value( 'nest.nest1' ) == [ 'mouse', 'wombat' ]
 
+
+def test_command_line_boolean_not_given( cfg ):
+    parser = argparse.ArgumentParser()
+    cfg.augment_argparse( parser )
+    arglist = []
+    args = parser.parse_args( arglist )
+    cfg.parse_args( args )
+    assert cfg.value( 'maindict.bool_value' )
+    assert not cfg.value( 'maindict.false_bool_value' )
+
+
+def test_command_line_boolean_set_true( cfg ):
+    parser = argparse.ArgumentParser()
+    cfg.augment_argparse( parser )
+    arglist = [ '--maindict-bool_value', '--maindict-false_bool_value' ]
+    args = parser.parse_args( arglist )
+    cfg.parse_args( args )
+    assert cfg.value( 'maindict.bool_value' )
+    assert cfg.value( 'maindict.false_bool_value' )
+
+
+def test_command_line_boolean_set_false( cfg ):
+    parser = argparse.ArgumentParser()
+    cfg.augment_argparse( parser )
+    arglist = [ '--no-maindict-bool_value', '--no-maindict-false_bool_value' ]
+    args = parser.parse_args( arglist )
+    cfg.parse_args( args )
+    assert not cfg.value( 'maindict.bool_value' )
+    assert not cfg.value( 'maindict.false_bool_value' )
 
 
 def test_no_direct_instantiation():
