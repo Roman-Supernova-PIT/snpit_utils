@@ -306,16 +306,6 @@ def test_command_line_boolean_set_false( cfg ):
     assert not cfg.value( 'maindict.false_bool_value' )
 
 
-def test_command_line_boolean_fail_inconsistent( cfg ):
-    parser = argparse.ArgumentParser()
-    cfg.augment_argparse( parser )
-    arglist = [ '--maindict-bool_value', '--no-maindict-bool_value' ]
-    args = parser.parse_args( arglist )
-    with pytest.raises( RuntimeError, match="^Can't specify both maindict_bool_value and no_maindict_bool_value" ):
-        cfg.parse_args( args )
-
-
-
 def test_no_direct_instantiation():
     with pytest.raises( RuntimeError, match="Don't instantiate a Config directly; use configobj=Config.get(...)." ):
         _ = Config()

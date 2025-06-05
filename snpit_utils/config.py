@@ -1,8 +1,9 @@
+import argparse
+import copy
+import numbers
 import os
 import pathlib
-import numbers
 import types
-import copy
 import yaml
 
 from snpit_utils.logger import SNLogger
@@ -823,10 +824,7 @@ class Config:
             elif isinstance( val, str ):
                 parser.add_argument( f'--{path}{key}', help=f"Default: {val}" )
             elif isinstance( val, bool ):
-                parser.add_argument( f'--{path}{key}', action="store_true", default=False,
-                                     help=f"Set {path}{key} to True" )
-                parser.add_argument( f'--no-{path}{key}', action="store_false", default=True,
-                                     help=f"Set {path}{key} to False" )
+                parser.add_argument( f'--{path}{key}', action=argparse.BooleanOptionalAction )
             elif isinstance( val, numbers.Integral ):
                 parser.add_argument( f'--{path}{key}', type=int, help=f"Default: {val}" )
             elif isinstance( val, numbers.Real ):
@@ -846,13 +844,6 @@ class Config:
             arg = f'{path}{key}'
             if isinstance( val, dict ):
                 self.parse_args( args, path=f'{arg}_', _dict=val )
-            elif isinstance( val, bool ):
-                if getattr( args, arg ):
-                    if not getattr( args, f"no_{arg}" ):
-                        raise RuntimeError( f"Can't specify both {arg} and no_{arg}" )
-                    _dict[key] = True
-                elif not getattr( args, f"no_{arg}" ):
-                    _dict[key] = False
             elif getattr( args, arg ) is not None:
                 _dict[key] = getattr( args, arg )
 
