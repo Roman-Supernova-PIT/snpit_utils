@@ -1,0 +1,1 @@
+Support boolean config values on the command line
