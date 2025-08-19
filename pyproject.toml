@@ -3,7 +3,7 @@ name = "snpit_utils"
 description = "Base utilities for the Roman SNPIT"
 requires-python = ">=3.11"
 dynamic = ["version"]
-authors = [{ name = "Roman Supernove Project Infrastructure Team"}]
+authors = [{ name = "Roman Supernova Project Infrastructure Team"}]
 
 maintainers = [
  {name = "Rob Knop et al.", email = "raknop@lbl.gov"}
