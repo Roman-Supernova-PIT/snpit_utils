@@ -1,4 +1,4 @@
-K__all__ = [ 'Config', 'NoValue' ]
+__all__ = [ 'Config', 'NoValue' ]
 
 import argparse
 import copy
