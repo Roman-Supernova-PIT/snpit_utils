@@ -8,4 +8,6 @@ snpit_utils API
 
 .. automodapi:: snpit_utils.config
 
+.. automodapi:: snpit_utils.http
+
 .. automodapi:: snpit_utils.logger

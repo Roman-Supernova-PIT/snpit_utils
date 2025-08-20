@@ -1,3 +1,5 @@
+__all__ = [ 'retry_post' ]
+
 import time
 import requests
 
@@ -39,6 +41,10 @@ def retry_post( url, json=None, data=None, retries=5, initsleep=1., sleepfac=1.5
         need to set it to False for tests or some such.
 
       **kwargs: further arguments are forwarded to requests.post.
+
+    Returns
+    -------
+      requests.Response
 
     """
 

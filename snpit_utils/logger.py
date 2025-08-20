@@ -1,3 +1,5 @@
+__all__ = [ 'SNLogger' ]
+
 import sys
 import re
 import multiprocessing
