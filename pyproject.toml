@@ -17,6 +17,7 @@ classifiers = [
   "Programming Language :: Python"
 ]
 dependencies = [
+  "numpy",
   "towncrier",
   "setuptools_scm",
   "cruft",

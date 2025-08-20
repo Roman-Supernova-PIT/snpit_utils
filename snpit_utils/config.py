@@ -1,3 +1,5 @@
+__all__ = [ 'Config', 'NoValue' ]
+
 import argparse
 import copy
 import numbers
@@ -10,7 +12,7 @@ from snpit_utils.logger import SNLogger
 
 
 class NoValue:
-    """Used internally."""
+    """Used internally by Config, ignore."""
     pass
 
 
@@ -27,6 +29,7 @@ class Config:
     1. Instantiate a config object with
 
            confobj = Config.get()
+
        or
 
            confobj = Config.get(filename)
@@ -109,6 +112,7 @@ class Config:
        then confobj.value("storage.images.format") will return
        "fits". You can also ask configobj.value for higher levels.  For
        example, config.value("storage.images") will return a dictionary:
+
           { "format": "fits",
             "single_file": False,
             "name_convention": "{inst_name}_{date}_{time}_{section_id}_{filter}_{im_type}_{prov_hash:.6s}"
@@ -145,12 +149,14 @@ class Config:
     a list, or a dictionary.
 
     A config file can have several special keys:
+
         preloads
         replaceable_preloads
         augments
         overrides
         destructive_appends
         appends
+
     The value associated with each key is a list of file paths relative
     to the directory where this file is found.  All of this can get
     quite complicated, so use a lot of caution when using it.  The
@@ -445,23 +451,22 @@ class Config:
     #    a new set.  But it wasn't!  WTF?  Doing the "None"
     #    thing as a workaround.
     def __init__( self, configfile=None, clone=None, files_read=None, _ok_to_call=False ):
-        """Don't call this, call static method Config.get().
+        """Don't directly instantiate a Config object, call static method Config.get().
 
         Parameters
         ----------
         configfile : str or Path, or None
 
         clone : Config object, default None
+          If clone is not None, then build the current object as a copy of
+          the config object passed in clone.  In this case, the returned
+          config object is modifiable.
 
-        If clone is not None, then build the current object as a copy of
-        the config object passed in clone.  In this case, the returned
-        config object is modifiable.
-
-        Otherwise, read the configfile and build the object based on
-        that; in this case, the returned config object is not supposed
-        to be modified, and set_value won't work.  (Of course, you can
-        always go and muck about directly with the _data property, but
-        don't do that!)
+          Otherwise, read the configfile and build the object based on
+          that; in this case, the returned config object is not supposed
+          to be modified, and set_value won't work.  (Of course, you can
+          always go and muck about directly with the _data property, but
+          don't do that!)
 
         """
 
@@ -596,10 +601,10 @@ class Config:
         -------
         int, float, str, list, or dict
 
-        If a list or dict, you get a deep copy of the original list or
-        dict.  As such, it's safe to modify the return value without
-        worrying about changing the internal config.  (If you want to
-        change the internal config, use set_value().)
+          If a list or dict, you get a deep copy of the original list or
+          dict.  As such, it's safe to modify the return value without
+          worrying about changing the internal config.  (If you want to
+          change the internal config, use set_value().)
 
         """
 
@@ -814,6 +819,22 @@ class Config:
 
 
     def augment_argparse( self, parser, path='', _dict=None ):
+        """Add arguments to an ArgumentParser for all config values.
+
+        See the Config docstring for instructions on use.
+
+        Parameters
+        ----------
+          parser : ArgumentParser
+            The ArgumentParser to which additional arguments should be added.
+
+          path : str
+            Used internally for recursion.
+
+          _dict : dict
+            Used internally for recursion.
+
+        """
         _dict = self._data if _dict is None else _dict
 
         for key, val in _dict.items():
@@ -838,6 +859,22 @@ class Config:
 
 
     def parse_args( self, args, path='',_dict=None ):
+        """Update config options from argparse arguments.
+
+        See the docstring for the Config class for instructions on using this.
+
+        Parameters
+        ----------
+          args: Namespace
+            Something returned by argparser.ArgumentParser.parse_args()
+
+          path: string
+            Used internally for recursion
+
+          _dict: dict
+            Used internally for recursion
+
+        """
         _dict = self._data if _dict is None else _dict
 
         for key, val in _dict.items():
