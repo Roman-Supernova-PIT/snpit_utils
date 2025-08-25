@@ -22,4 +22,3 @@ def test_retry_post():
 
     with pytest.raises( RuntimeError, match="Got status 500 trying to connect" ):
         retry_post( 'https://roman-desc-simdex.lbl.gov/findtransients/foo=bar', retries=3, initsleep=0.2 )
-
