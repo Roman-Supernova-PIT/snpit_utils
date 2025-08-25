@@ -1,3 +1,4 @@
+import pytest
 from snpit_utils.http import retry_post
 
 
@@ -18,3 +19,6 @@ def test_retry_post():
     assert isinstance( data, dict )
     assert len( data['id'] ) == 1
     assert data['id'][0] == 30011289
+
+    with pytest.raises( RuntimeError, match="Got status 500 trying to connect" ):
+        retry_post( 'https://roman-desc-simdex.lbl.gov/findtransients/foo=bar', retries=3, initsleep=0.2 )

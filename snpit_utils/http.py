@@ -84,6 +84,6 @@ def retry_post( url, json=None, data=None, retries=5, initsleep=1., sleepfac=1.5
             else:
                 SNLogger.error( f"Failed to connect to {url} after {retries} tries "
                                    f"over {dt:.2f} seconds.  Giving up." )
-                if ( res is not None ) and ( res.stsatus_code == 500 ):
+                if ( res is not None ) and ( res.status_code == 500 ):
                     SNLogger.debug( f"Body of 500 return: {res.text}" )
                 raise
