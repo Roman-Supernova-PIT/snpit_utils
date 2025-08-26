@@ -178,7 +178,7 @@ class SNLogger:
 
     def __init__( self, midformat=None, datefmt=_default_datefmt,
                   show_millisec=_show_millisec, level=_default_log_level,
-                  handler=None ):
+                  handler=None, propagate=False ):
         """Initialize a SNLogger object, and the logging.Logger object it holds.
 
         Parameters
@@ -205,6 +205,15 @@ class SNLogger:
             If you want it to go somewhere else, create an approprite
             logging.Handler subclass and pass it here.
 
+        propagate : book, default False
+            cf: python logging.Logger.propagate
+
+            We default to False to avoid replication of logging messages
+            if, somehow, there's another logger above the one we create
+            here.  (TODO: understand how python logging ancestors work.
+            I've never expicitly set a parent logger, and yet somehow in
+            code loggers often seem to have ancestors.)
+
         """
         self._midformat = midformat
         self._datefmt = datefmt
@@ -214,6 +223,7 @@ class SNLogger:
 
         SNLogger._ordinal += 1
         self._logger = logging.getLogger( f"SeeChange_{SNLogger._ordinal}" )
+        self._logger.propagate = propagate
 
         fmtstr = "[%(asctime)s"
         if self._show_millisec:
