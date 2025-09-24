@@ -11,3 +11,5 @@ snpit_utils API
 .. automodapi:: snpit_utils.http
 
 .. automodapi:: snpit_utils.logger
+
+.. automodapi:: snpit_utils.utils
