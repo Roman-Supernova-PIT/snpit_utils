@@ -1,0 +1,6 @@
+parse_bool
+==========
+
+.. currentmodule:: snpit_utils.utils
+
+.. autofunction:: parse_bool

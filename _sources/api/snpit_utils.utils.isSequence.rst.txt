@@ -1,0 +1,6 @@
+isSequence
+==========
+
+.. currentmodule:: snpit_utils.utils
+
+.. autofunction:: isSequence
