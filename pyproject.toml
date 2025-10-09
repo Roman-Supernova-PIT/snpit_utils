@@ -17,7 +17,9 @@ classifiers = [
   "Programming Language :: Python"
 ]
 dependencies = [
-  "numpy",
+  "requests>=3.32.5",
+  "psycopg>=3.2.9",
+  "numpy>=2.2.6",
   "towncrier",
   "setuptools_scm",
   "cruft",
