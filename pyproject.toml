@@ -17,14 +17,10 @@ classifiers = [
   "Programming Language :: Python"
 ]
 dependencies = [
-  "requests>=3.32.5",
+  "rkwebutil==2.0.1",
+  "requests>=2.32.5",
   "psycopg>=3.2.9",
   "numpy>=2.2.6",
-  "towncrier",
-  "setuptools_scm",
-  "cruft",
-  "coverage",
-  
 ]
 license-files = ["LICENSE"]
 
@@ -63,6 +59,9 @@ repository = "https://github.com/Roman-Supernova-PIT"
 
 [build-system]
 requires = [
+  "towncrier",
+  "cruft",
+  "coverage",
   "setuptools>=62.1",
   "setuptools_scm[tomli]>=6.2",
   "wheel",
