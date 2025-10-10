@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COMPOSE_FILE: snpit_utils/tests/docker-compose.yaml
+      SNPIT_CONFIG: /home/snpit_utils/snpit_utils/tests/test_snpit_utils.yaml
 
     steps:
       - name: Dump docker logs on failure
@@ -43,10 +44,21 @@ jobs:
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
-      - name: pull latest SNPIT cpu image
+      - name: pull environment archive
         run: |
-          docker pull rknop/roman-snpit-env:cpu
+          git clone https://github.com/Roman-Supernova-PIT/environment.git
+          # snpit_utils doesn't actually use the photometry test data,
+          #   but the docker-compose file needs the directory
+          mkdir /photometry_test_data
 
+      - name: pull docker images
+        run: |
+          docker pull mailhog postgres webserver shell
+          
       - name: run test
         run: |
-          docker compose run runtests
+          cd environment/test-docker-environment
+          docker compose up -d webserver shell
+          docker compose run shell bash -c 'cd /home/snpit_utils && pip install -e .[test]'
+          docker compose run shell bash -c 'cd /home/snpit_utils/snpit_utils/tests && pytest -v'
+          docker compose down -v
