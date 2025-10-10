@@ -2,7 +2,11 @@ __all__ = [ 'isSequence', 'parse_bool', 'env_as_bool' ]
 
 import os
 import numbers
+import datetime
+import json
+import uuid
 import collections.abc
+
 import numpy as np
 
 
@@ -57,3 +61,27 @@ def parse_bool(text):
 def env_as_bool( varname ):
     """Parse an environment variable as a boolean."""
     return parse_bool( os.getenv(varname) )
+
+
+class SNPITJsonEncoder( json.JSONEncoder ):
+    """Some specific encodings we need for the JSON use.
+
+    We want to know how to encode UUIDs to strings.
+
+    We want to be able to encoded numpy stuff.
+
+    Encode datetime to isoformat strings.
+
+    """
+
+    def default( self, obj ):
+        if isinstance( obj, uuid.UUID ):
+            return str
+        if isinstance( obj, np.floating ):
+            return float( obj )
+        if isinstance( obj, np.bool_ ):
+            return bool( obj )
+        if isinstance( obj, np.ndarray ):
+            return obj.tolist()
+        if isinstance(obj, datetime ):
+            return obj.isoformat()
