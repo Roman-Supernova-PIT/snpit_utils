@@ -83,6 +83,6 @@ class SNPITJsonEncoder( simplejson.JSONEncoder ):
             return bool( obj )
         if isinstance( obj, np.ndarray ):
             return obj.tolist()
-        if isinstance(obj, datetime ):
+        if isinstance(obj, datetime.datetime ):
             return obj.isoformat()
         return simplejson.JSONEncoder.default(self, obj)
