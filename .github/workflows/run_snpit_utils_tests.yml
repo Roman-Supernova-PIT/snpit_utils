@@ -50,7 +50,7 @@ jobs:
           git clone https://github.com/Roman-Supernova-PIT/environment.git
           # snpit_utils doesn't actually use the photometry test data,
           #   but the docker-compose file needs the directory
-          mkdir /photometry_test_data
+          mkdir photometry_test_data
 
       - name: ls
         run: ls
