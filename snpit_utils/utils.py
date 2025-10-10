@@ -3,7 +3,7 @@ __all__ = [ 'isSequence', 'parse_bool', 'env_as_bool' ]
 import os
 import numbers
 import datetime
-import json
+import simplejson
 import uuid
 import collections.abc
 
@@ -63,7 +63,7 @@ def env_as_bool( varname ):
     return parse_bool( os.getenv(varname) )
 
 
-class SNPITJsonEncoder( json.JSONEncoder ):
+class SNPITJsonEncoder( simplejson.JSONEncoder ):
     """Some specific encodings we need for the JSON use.
 
     We want to know how to encode UUIDs to strings.
@@ -85,3 +85,4 @@ class SNPITJsonEncoder( json.JSONEncoder ):
             return obj.tolist()
         if isinstance(obj, datetime ):
             return obj.isoformat()
+        return simplejson.JSONEncoder.default(self, obj)
