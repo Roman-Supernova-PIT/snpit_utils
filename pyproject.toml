@@ -20,7 +20,7 @@ dependencies = [
   "numpy>=2.2.6,<3.0.0",
   "pyyaml>=6.0.3,<7.0.0",
   "requests>=2.32.5,<3.0.0",
-  "rkwebutil>=2.1.1,<3.0.0",
+  "rkwebutil>=2.2.1,<3.0.0",
   "simplejson>=3.20.2,<4.0.0"
 ]
 license-files = ["LICENSE"]

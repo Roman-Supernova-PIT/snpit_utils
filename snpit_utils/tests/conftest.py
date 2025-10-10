@@ -61,4 +61,4 @@ tyOci9saPPfI1bNnKD202zsCAwEAAQ==
 
 @pytest.fixture( scope="session" )
 def dbclient( dbuser ):
-    return SNPITDBClient( verify=False )
+    return SNPITDBClient( verify=False, retries=1 )

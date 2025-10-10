@@ -1,7 +1,7 @@
 import pytest
 import psycopg
 from snpit_utils.http import retry_post
-from snpit_utils.db import Provenance
+
 
 def test_retry_post( dbclient ):
     provstodel = []
@@ -18,7 +18,7 @@ def test_retry_post( dbclient ):
         assert set( data.keys() ) == { 'param', 'json' }
         assert data['param'] == 'blah'
         assert data['json']['answer'] == 42
-        
+
         with pytest.raises( RuntimeError, match="Got status 500 trying to connect" ):
             retry_post( 'https://webserver:8080/this_endpoint_does_not_exist', retries=3, initsleep=0.2, verify=False )
 
@@ -30,4 +30,3 @@ def test_retry_post( dbclient ):
             cursor.execute( "DELETE FROM provenance_tag WHERE tag='bar'" )
             cursor.execute( "DELETE FROM provenance WHERE id=ANY(%(provs)s)", { 'provs': provstodel } )
             con.commit()
-        
