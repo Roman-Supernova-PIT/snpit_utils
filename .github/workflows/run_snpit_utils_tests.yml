@@ -54,8 +54,9 @@ jobs:
       - name: ls
         run: |
           cd /home/runner/work
-          ls
-          ls snpit_utils
+          ls -lF
+          echo "-------"
+          ls -lF snpit_utils
           
       - name: pull docker images
         run: |
