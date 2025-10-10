@@ -4,7 +4,6 @@ import psycopg
 from snpit_utils.db import Provenance
 
 
-# TODO : test a provenance that uses a non-trivial params
 def test_provenance( dbclient ):
     wayupstream = Provenance( process="proc0", major=1, minor=0 )
     upstream2 = Provenance( process="proc1", major=42, minor=13 )
@@ -16,7 +15,9 @@ def test_provenance( dbclient ):
     assert downstream.upstreams[0].id == upstream1.id
     assert downstream.upstreams[0].upstreams[0].id == wayupstream.id
 
+    provstodel = { 'provs': [] }
     try:
+        provstodel['provs'] = [ wayupstream.id, upstream2.id, upstream1.id, upstream1a.id ]
         wayupstream.save_to_db( dbclient, tag='kitten' )
         upstream2.save_to_db( dbclient, tag='foo' )
         upstream1.save_to_db( dbclient, tag='foo' )
@@ -30,7 +31,7 @@ def test_provenance( dbclient ):
         # Make sure that didn't tag wayupstream with foo
         provs = Provenance.get_provs_for_tag( dbclient, 'foo' )
         assert len( provs) == 2
-        assert str(wayupstream.id) not in [ p['id'] for p in provs ]
+        assert str(wayupstream.id) not in [ p.id for p in provs ]
 
         # Make sure we can get a process we saved
         prov = Provenance.get( dbclient, "proc1", 42, 13, exists=True )
@@ -50,6 +51,7 @@ def test_provenance( dbclient ):
                                    exists=True )
 
         # Make sure that if we say savedb, the provenance is created
+        provstodel['provs'].append( downstream.id )
         prov = Provenance.get( dbclient, "proc3", major=23, minor=64738, upstreams=[ upstream1, upstream2 ],
                                savetodb=True )
         assert prov.id == downstream.id
@@ -76,7 +78,33 @@ def test_provenance( dbclient ):
         prov = Provenance.get_by_id( dbclient, downstream.id )
         check_provs( prov, downstream )
 
+        # Make sure we can get provenances for a tag
+        provs = Provenance.get_provs_for_tag( dbclient, 'foo', 'proc2' )
+        assert len(provs) == 1
+        check_provs( provs[0], upstream1 )
 
+        provs = Provenance.get_provs_for_tag( dbclient, 'foo' )
+        assert len(provs) == 2
+        provs.sort( key=lambda x: x.id )
+        origprovs = [ upstream1, upstream2 ]
+        origprovs.sort( key=lambda x: x.id )
+        check_provs( provs[0], origprovs[0] )
+        check_provs( provs[1], origprovs[1] )
+
+        # Check params
+        downstream2 = Provenance( process=downstream.process, major=downstream.major, minor=downstream.minor,
+                                  upstreams=downstream.upstreams, params={ 'answer': 42,
+                                                                           'numbers': [4, 8, 15, 16, 23, 42],
+                                                                           'cat': 'Echelle'
+                                                                          } )
+        assert downstream2.id != downstream.id
+        provstodel['provs'].append( downstream2.id )
+        downstream2.save_to_db( dbclient )
+        prov = Provenance.get_by_id( dbclient, downstream2.id )
+        check_provs( prov, downstream2 )
+        assert prov.params['answer'] == 42
+        assert prov.params['numbers'] == [ 4, 8, 15, 16, 23, 42 ]
+        assert prov.params['cat'] == 'Echelle'
 
     finally:
         with open( '/secrets/pgpasswd' ) as ifp:
@@ -85,9 +113,8 @@ def test_provenance( dbclient ):
             cursor = con.cursor()
             cursor.execute( "DELETE FROM provenance_tag WHERE tag=ANY(%(tag)s)",
                             { 'tag': [ 'kitten', 'foo', 'bar', 'kaglorky' ] } )
-            subdict = { 'provs': [ wayupstream.id, upstream2.id, upstream1.id, upstream1a.id, downstream.id ] }
             cursor.execute( "DELETE FROM provenance_upstream "
                             "WHERE upstream_id=ANY(%(provs)s) OR downstream_id=ANY(%(provs)s)",
-                            subdict )
-            cursor.execute( "DELETE FROM provenance WHERE id=ANY(%(provs)s)", subdict )
+                            provstodel )
+            cursor.execute( "DELETE FROM provenance WHERE id=ANY(%(provs)s)", provstodel )
             con.commit()

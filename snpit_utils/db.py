@@ -1,12 +1,13 @@
 import base64
 import hashlib
-import simplejson
+import json
 import uuid
 
 
 from rkwebutil.rkauth_client import rkAuthClient
 
 from snpit_utils.config import Config
+from snpit_utils.utils import SNPITJsonEncoder
 
 
 class SNPITDBClient( rkAuthClient ):
@@ -117,7 +118,15 @@ class Provenance:
         make them.
 
         """
-        spec = simplejson.dumps( self.spec_dict() ).encode( "utf-8" )
+        # Note : we need the sort_keys here, because while python dictionaries are
+        #   ordered, json dictionaries are NOT.  This means that the key order is
+        #   going to get munged somewhere along the line.  (If not in our string
+        #   encoding, then when saved to PostgreSQL JSONB objects.)  So that the id
+        #   is reproducible, we have to punt on the ordering of the params, and
+        #   sort the keys when writing out the JSON string so that they always come
+        #   in the same order regardless of whether it came from an initial python
+        #   dict, or if it came through JSON with unordered dictionaries.
+        spec = json.dumps( self.spec_dict(), cls=SNPITJsonEncoder, sort_keys=True ).encode( "utf-8" )
         barf = base64.standard_b64encode( spec )
         md5sum = hashlib.md5( barf )
         self.id = uuid.UUID( md5sum.hexdigest() )
@@ -305,6 +314,8 @@ class Provenance:
 
         """
         if process is not None:
-            return [ dbclient.send( f"/getprovenance/{tag}/{process}" ) ]
+            provs = [ dbclient.send( f"/getprovenance/{tag}/{process}" ) ]
         else:
-            return dbclient.send( f"/provenancesfortag/{tag}" )
+            provs = dbclient.send( f"/provenancesfortag/{tag}" )
+
+        return [ cls.parse_provenance(p) for p in provs ]
