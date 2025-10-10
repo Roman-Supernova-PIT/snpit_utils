@@ -11,8 +11,6 @@ jobs:
   tests:
     name: run snpit_utils tests in docker container
     runs-on: ubuntu-latest
-    env:
-      SNPIT_CONFIG: /home/snpit_utils/snpit_utils/tests/test_snpit_utils.yaml
 
     steps:
       - name: Dump docker logs on failure
@@ -51,13 +49,6 @@ jobs:
           #   but the docker-compose file needs the directory
           mkdir photometry_test_data
 
-      - name: ls
-        run: |
-          cd /home/runner/work/snpit_utils
-          ls -lF
-          echo "-------"
-          ls -lF snpit_utils/
-          
       - name: pull docker images
         run: |
           cd /home/runner/work/snpit_utils/environment/test-docker-environment
@@ -73,5 +64,5 @@ jobs:
           docker compose exec shell bash -c 'cd /home/snpit_utils && ls -lF'
           echo "--------"
           docker compose exec shell bash -c 'cd /home/snpit_utils && pip install -e .[test]'
-          docker compose exec shell bash -c 'cd /home/snpit_utils/snpit_utils/tests && pytest -v'
+          docker compose exec shell bash -c 'cd /home/snpit_utils/snpit_utils/tests && SNPIT_CONFIG=test_snpit_utils.yaml pytest -v'
           docker compose down -v
