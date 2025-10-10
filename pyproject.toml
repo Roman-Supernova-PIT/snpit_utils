@@ -20,7 +20,8 @@ dependencies = [
   "numpy>=2.2.6,<3.0.0",
   "pyyaml>=6.0.3,<7.0.0",
   "requests>=2.32.5,<3.0.0",
-  "rkwebutil>=2.0.1,<2.1.0"
+  "rkwebutil>=2.0.1,<2.1.0",
+  "simplejson>=3.20.2,<4.0.0"
 ]
 license-files = ["LICENSE"]
 
@@ -35,6 +36,7 @@ content-type = "text/x-rst"
 
 [project.optional-dependencies]
 test = [
+    "psycopg",
     "pytest",
     "pytest-doctestplus",
     "pytest-cov",

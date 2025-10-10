@@ -75,8 +75,10 @@ class Provenance:
           env_minor : int, default None
             Semantic minor version of environment.
 
-          upstreams : list of UUID or Provenance
-            Upstream provenances to this provenance
+          upstreams : list of Provenance
+            Upstream provenances to this provenance.  Only include immediate upstreams;
+            no need for upstreams of upstreams, as those will be tracked by the immedaite
+            upstreams.  Can also send a single Provenance.
 
         """
         self.process = process
@@ -86,7 +88,11 @@ class Provenance:
         self.environment = environment
         self.env_major = env_major
         self.env_minor = env_minor
-        self.upstream_ids = [ i if isinstance(i, uuid.UUID) else i.id for i in upstreams ]
+        self.upstreams = list( upstreams ) if upstreams is not None else []
+        if not all( isinstance( u, Provenance ) for u in self.upstreams ):
+            raise TypeError( "upstream must be a list of Provenance" )
+        # Sort upstreams by id so they are in a reproducible order
+        self.upstreams.sort( key=lambda x: x.id )
         self.update_id()
 
     def spec_dict( self ):
@@ -97,7 +103,7 @@ class Provenance:
                  'env_major': self.env_major,
                  'env_minor': self.env_minor,
                  'params': self.params,
-                 'upstream_ids': [ str(i) for i in self.upstream_ids ]
+                 'upstream_ids': [ str(u.id) for u in self.upstreams ]
                 }
 
 
@@ -122,6 +128,11 @@ class Provenance:
 
         Will call self.update_id() as a side effect, just to make sure
         the right ID is saved to the database.
+
+        If you save a provenance with upstreams, those upstreams must
+        have previously been saved themselves.  (So, you can't create
+        a whole provenance tree and have the whole thing saved in
+        one call; it doesn't recurse.)
 
         Parmaeters
         ----------
@@ -149,7 +160,10 @@ class Provenance:
         """
 
         self.update_id()
-        savedprov = self.get_by_id( dbclient, self.id )
+        try:
+            savedprov = self.get_by_id( dbclient, self.id )
+        except Exception:
+            savedprov = None
 
         if ( savedprov is None ) and ( exists is not None ) and exists:
             raise RuntimeError( f"Provenance {self.id} doesn't exist in the database, and exists is True; "
@@ -159,7 +173,7 @@ class Provenance:
 
         if savedprov is None:
             res = dbclient.send( "createprovenance",
-                                 { 'id': self.id,
+                                 { 'id': str(self.id),
                                    'process': self.process,
                                    'major': self.major,
                                    'minor': self.minor,
@@ -167,7 +181,7 @@ class Provenance:
                                    'env_major': self.env_major,
                                    'env_minor': self.env_minor,
                                    'params': self.params,
-                                   'upstream_ids': self.upstream_ids,
+                                   'upstream_ids': [ str(u.id) for u in self.upstreams ],
                                    'tag': tag,
                                    'replace_tag': replace_tag } )
             if res['status'] != 'ok':
@@ -176,7 +190,7 @@ class Provenance:
 
     @classmethod
     def get( cls, dbclient, process, major, minor, params={}, environment=None, env_major=None, env_minor=None,
-             exists=None, savetodb=False ):
+             upstreams=[], exists=None, savetodb=False ):
         """Get a Provenance based on properties.
 
         Arguments are the same as are passed to the Provenance constructor, plus:
@@ -214,7 +228,17 @@ class Provenance:
         """
 
         prov = cls( process, major, minor, params=params, environment=environment,
-                    env_major=env_major, env_minor=env_minor )
+                    env_major=env_major, env_minor=env_minor, upstreams=upstreams )
+        if exists:
+            try:
+                existing = cls.get_by_id( dbclient, prov.id )
+            except Exception:
+                raise RuntimeError( f"Requested provenance {prov.id} does not exist in the database." )
+
+            existing.update_id()
+            if existing.id != prov.id:
+                raise RuntimeError( "Existing provenance id is wrong in the database!  This should not happen!" )
+
         if savetodb:
             try:
                 prov.save_to_db( dbclient, exists=exists )
@@ -223,6 +247,18 @@ class Provenance:
                     raise
                 # Otherwise, the exception just means it was already there, so we don't care
 
+        return prov
+
+    @classmethod
+    def parse_provenance( cls, provdict ):
+        kwargs = { k: provdict[k] for k in [ 'process', 'major', 'minor', 'params',
+                                             'environment', 'env_major', 'env_minor' ]
+                  }
+        kwargs[ 'upstreams' ] = [ cls.parse_provenance(p) for p in provdict['upstreams'] ]
+        prov = cls( **kwargs )
+        if str(prov.id) != provdict['id']:
+            raise ValueError( f"Got provenance {provdict['id']} back from the database, but when I rebuilt it, "
+                              f"I got {prov.id}.  This is bad." )
         return prov
 
 
@@ -242,4 +278,33 @@ class Provenance:
 
         """
 
-        return dbclient.send( f"getprovenance/{provid}" )
+        return cls.parse_provenance( dbclient.send( f"getprovenance/{provid}" ) )
+
+
+
+    @classmethod
+    def get_provs_for_tag( cls, dbclient, tag, process=None ):
+        """Get the Provenances for a given provenance tag.
+
+        Parameters
+        ----------
+          dbclient: snpit_utils.db.SNPITDBClient
+            This is needed to talk to the Roman SNPIT database web server.
+
+          tag : str
+            The provenance tag to search
+
+          process : str, default None
+            The process to get provenances for.  If None, will get all
+            provenances associated with the tag.
+
+        Returns
+        -------
+        list of Provenance.  (Note that if you give a process, this will
+        always be a zero- or one-element list.)
+
+        """
+        if process is not None:
+            return [ dbclient.send( f"/getprovenance/{tag}/{process}" ) ]
+        else:
+            return dbclient.send( f"/provenancesfortag/{tag}" )
