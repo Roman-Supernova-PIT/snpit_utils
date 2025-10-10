@@ -61,7 +61,7 @@ jobs:
 
       - name: run test
         run: |
-          cd /home/runner/work/snpit_utils/environment/test-docker-environment
+          cd /home/runner/work/environment/test-docker-environment
           docker compose up -d webserver shell
           docker compose exec shell bash -c 'cd /home/snpit_utils && pip install -e .[test]'
           docker compose exec shell bash -c 'cd /home/snpit_utils/snpit_utils/tests && pytest -v'
