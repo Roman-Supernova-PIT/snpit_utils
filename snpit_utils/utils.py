@@ -76,7 +76,7 @@ class SNPITJsonEncoder( simplejson.JSONEncoder ):
 
     def default( self, obj ):
         if isinstance( obj, uuid.UUID ):
-            return str
+            return str( obj )
         if isinstance( obj, np.floating ):
             return float( obj )
         if isinstance( obj, np.bool_ ):
