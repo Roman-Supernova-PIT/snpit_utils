@@ -52,7 +52,10 @@ jobs:
           mkdir photometry_test_data
 
       - name: ls
-        run: ls
+        run: |
+          cd /home/runner/work
+          ls
+          ls snpit_utils
           
       - name: pull docker images
         run: |
