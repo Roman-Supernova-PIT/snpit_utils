@@ -81,6 +81,13 @@ class SNPITDBClient( rkAuthClient ):
 
         """
         cfg = Config.get()
+
+        try:
+            if cfg.value( 'db.not_using_database' ):
+                return None
+        except Exception:
+            pass
+
         url = url if url is not None else cfg.value( 'db.url' )
         username = username if username is not None else cfg.value( 'db.username' )
         if ( password is None ) and ( passwordfile is None ):
@@ -372,18 +379,21 @@ class Provenance:
             The provenance tag to search
 
           process : str, default None
-            The process to get provenances for.  If None, will get all
+            The process to get the provenance for.  If None, will get all
             provenances associated with the tag.
 
         Returns
         -------
-        list of Provenance.  (Note that if you give a process, this will
-        always be a zero- or one-element list.)
+          Provenance or list of Provenance
+
+          If process is None, you will get back a list of Provenances,
+          which is all provenances associated with the specified tag.
+          If process it not None you wil get back a single Provenance.
 
         """
         if process is not None:
-            provs = [ dbclient.send( f"/getprovenance/{tag}/{process}" ) ]
+            prov = dbclient.send( f"/getprovenance/{tag}/{process}" )
+            return cls.parse_provenance( prov )
         else:
             provs = dbclient.send( f"/provenancesfortag/{tag}" )
-
-        return [ cls.parse_provenance(p) for p in provs ]
+            return [ cls.parse_provenance(p) for p in provs ]
