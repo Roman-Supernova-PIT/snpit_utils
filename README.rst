@@ -1,3 +1,5 @@
+** 2026 February: THIS REPO DEPRECATED in favor of https://github.com/Roman-Supernova-PIT/snappl **
+
 Base utilities for the Roman SNPIT
 ----------------------------------
 
